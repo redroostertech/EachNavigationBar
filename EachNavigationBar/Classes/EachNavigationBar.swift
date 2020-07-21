@@ -9,7 +9,9 @@
 import UIKit
 
 open class EachNavigationBar: UINavigationBar {
-    
+
+    open var navBarFrame: UIView?
+
     /// automatically adjusts position when view layout
     open var automaticallyAdjustsPosition: Bool = true
     
@@ -84,9 +86,10 @@ open class EachNavigationBar: UINavigationBar {
     private var _contentView: UIView?
     
     private weak var viewController: UIViewController?
-    
-    public convenience init(viewController: UIViewController) {
+
+    public convenience init(navBarFrame: UIView? = nil, viewController: UIViewController) {
         self.init()
+        self.navBarFrame = navBarFrame
         self.viewController = viewController
         setItems([viewController._navigationItem], animated: false)
     }
@@ -230,7 +233,8 @@ extension EachNavigationBar {
         
         if automaticallyAdjustsPosition {
             frame = navigationBar.frame
-            frame.origin.y = Const.StatusBar.maxY
+//            frame.origin.y = Const.StatusBar.maxY
+            frame.origin.y = self.navBarFrame?.frame.maxY ?? 0
         } else {
             frame.size = navigationBar.frame.size
         }
@@ -276,9 +280,9 @@ private extension EachNavigationBar {
         background.clipsToBounds = isShadowHidden
         background.frame = CGRect(
             x: 0,
-            y: -Const.StatusBar.maxY,
+            y: -(self.navBarFrame?.frame.maxY ?? 0) , // -Const.StatusBar.maxY,
             width: bounds.width,
-            height: bounds.height + Const.StatusBar.maxY
+            height: bounds.height + (self.navBarFrame?.frame.maxY ?? 0) // Const.StatusBar.maxY
         )
         
         adjustsLayoutMarginsAfterIOS11()
