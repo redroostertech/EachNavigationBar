@@ -13,15 +13,27 @@ extension CGFloat {
     static let navigationBarHeight: CGFloat = 44.0
     
     static var statusBarMaxY: CGFloat {
-        if #available(iOS 13, *) {
-            return UIApplication.shared
-                .keyWindow?
-                .windowScene?
-                .statusBarManager?
-                .statusBarFrame
-                .maxY ?? 0
-        }
-        return UIApplication.shared.statusBarFrame.maxY
+      let sharedSelector = NSSelectorFromString("sharedApplication")
+      guard
+        UIApplication.responds(to: sharedSelector),
+        let shared = UIApplication.perform(sharedSelector)?.takeUnretainedValue() as? UIApplication else
+      {
+        fatalError("[Extensions cannot access Application]")
+        return .zero
+      }
+      if #available(iOS 13, *) {
+        return shared
+          .keyWindow?
+          .windowScene?
+          .statusBarManager?
+          .statusBarFrame
+          .maxY ?? 0
+      }
+      else {
+        return shared
+          .statusBarFrame
+          .height
+      }
     }
 }
 
